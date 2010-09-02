@@ -1,7 +1,8 @@
 begin
-  require 'rfuse-ng'
+  require 'fusefs'
 rescue LoadError
-  require File.expand_path('../../vendor/rfuse-ng/ext/rfuse_ng', __FILE__)
+  require File.expand_path('../../vendor/fusefs/ext/fusefs_lib', __FILE__)
+  require File.expand_path('../../vendor/fusefs/lib/fusefs', __FILE__)
 end
 
 module DtellaFS
