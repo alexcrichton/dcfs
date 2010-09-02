@@ -6,5 +6,5 @@ rescue LoadError
 end
 
 module DCFS
-  autoload :VERSION, 'dtellafs/version'
+  autoload :VERSION, 'dcfs/version'
 end
