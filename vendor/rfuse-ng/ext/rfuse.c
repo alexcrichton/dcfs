@@ -1,14 +1,21 @@
 #ifdef linux
 /* For pread()/pwrite() */
 #define _XOPEN_SOURCE 500
-#endif
 //FOR LINUX ONLY
 #include <linux/stat.h> 
+#endif
 
 #include <ruby.h>
 #include <fuse.h>
 #include <errno.h>
-#include <sys/statfs.h>
+
+#ifdef __APPLE__
+# include <sys/uio.h>
+# include <sys/mount.h>
+#else
+# include <sys/statfs.h>
+#endif
+
 #ifdef HAVE_SETXATTR
 #include <sys/xattr.h>
 #endif
@@ -1108,9 +1115,11 @@ static void *rf_init(struct fuse_conn_info *conn)
     UINT2NUM(conn->proto_minor),
     UINT2NUM(conn->async_read),
     UINT2NUM(conn->max_write),
-    UINT2NUM(conn->max_readahead),
-    UINT2NUM(conn->capable),
+    UINT2NUM(conn->max_readahead)
+#ifndef __APPLE__
+    ,UINT2NUM(conn->capable),
     UINT2NUM(conn->want)
+#endif
   );
 
   args[0] = fcio;
@@ -1441,7 +1450,7 @@ static int rf_bmap(const char *path, size_t blocksize, uint64_t *idx)
 }
 
 //----------------------IOCTL
-
+#ifndef __APPLE__
 static int rf_ioctl(const char *path, int cmd, void *arg,
   struct fuse_file_info *ffi, unsigned int flags, void *data)
 {
@@ -1450,13 +1459,13 @@ static int rf_ioctl(const char *path, int cmd, void *arg,
 }
 
 //----------------------POLL
-
 static int rf_poll(const char *path, struct fuse_file_info *ffi,
   struct fuse_pollhandle *ph, unsigned *reventsp)
 {
   //TODO
   return 0;
 }
+#endif
 
 //----------------------LOOP
 
@@ -1612,10 +1621,12 @@ static VALUE rf_initialize(
     inf->fuse_op.utimens     = rf_utimens;
   if (RESPOND_TO(self,"bmap"))
     inf->fuse_op.bmap        = rf_bmap;
+#ifndef __APPLE__
   if (RESPOND_TO(self,"ioctl"))
     inf->fuse_op.ioctl       = rf_ioctl;     // TODO
   if (RESPOND_TO(self,"poll"))
     inf->fuse_op.poll        = rf_poll;      // TODO
+#endif
 
   struct fuse_args
     *kargs = rarray2fuseargs(kernelopts),
