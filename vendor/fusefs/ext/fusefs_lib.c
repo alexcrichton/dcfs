@@ -4,7 +4,7 @@
  * a Rubyish way.
  */
 
-// #define DEBUG
+#define DEBUG
 
 #define FUSE_USE_VERSION 26
 #define _FILE_OFFSET_BITS 64
@@ -329,14 +329,17 @@ rf_getattr(const char *path, struct stat *stbuf) {
 
   /* "/" is automatically a dir. */
   if (strcmp(path,"/") == 0) {
-    stbuf->st_mode = S_IFDIR | 0555;
-    stbuf->st_size = 4096;
+    stbuf->st_mode = S_IFDIR | S_IRUSR | S_IRGRP | S_IROTH | S_IXUSR | S_IXGRP | S_IXOTH;
+    stbuf->st_size = 68;
     stbuf->st_nlink = 1;
     stbuf->st_uid = getuid();
     stbuf->st_gid = getgid();
     stbuf->st_mtime = rf_intval(path,id_mtime,init_time);
     stbuf->st_atime = rf_intval(path,id_atime,init_time);
     stbuf->st_ctime = rf_intval(path,id_ctime,init_time);
+
+    stbuf->st_ino = 2442591;
+    
     return 0;
   }
 
@@ -1473,6 +1476,7 @@ rf_mount_to(int argc, VALUE *argv, VALUE self) {
     snprintf(opts2,1024,"%s,%s",opts,StringValuePtr(argv[i]));
     strcpy(opts,opts2);
   }
+  printf("%s\n", opts);
 
   rb_iv_set(cFuseFS,"@mountpoint",mountpoint);
   fusefs_setup(StringValuePtr(mountpoint), &rf_oper, opts);

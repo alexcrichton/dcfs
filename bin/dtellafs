@@ -4,21 +4,41 @@ require 'rubygems'
 require 'bundler/setup'
 require 'dtellafs'
 
-directory = File.expand_path('../tmp', __FILE__)
-FileUtils.mkdir_p directory
+t = Time.now - 100
 
 class HelloDir
   def contents(path)
+    puts "contents: #{path}"
     ['hello.txt']
   end
   def size(path)
+    puts "sizing: #{path}"
     read_file(path).size
   end
   def file?(path)
+    puts "file?: #{path}"
     path == '/hello.txt'
   end
   def read_file(path)
+    puts "reading: #{path}"
     "Hello, World!\n"
+  end
+  
+  def respond_to? *args
+    # puts "respond_to?: #{args.inspect}"
+    super
+  end
+  
+  def atime *args
+    t
+  end
+  
+  def ctime *args
+    t
+  end
+  
+  def mtime *args
+    t
   end
 end
 
@@ -26,5 +46,5 @@ hellodir = HelloDir.new
 FuseFS.set_root( hellodir )
 
 # Mount under a directory given on the command line.
-FuseFS.mount_under directory
+FuseFS.mount_under File.expand_path(ARGV.shift)
 FuseFS.run
