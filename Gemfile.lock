@@ -1,7 +1,13 @@
-PATH
-  remote: /Users/alex/code/ruby/fargo
+GIT
+  remote: git://github.com/alexcrichton/fargo.git
+  revision: c528914c3417e9068d8890403c584787f1782aa7
   specs:
     fargo (0.0.1)
+
+PATH
+  remote: .
+  specs:
+    dcfs (0.0.1)
 
 GEM
   remote: http://rubygems.org/
@@ -31,6 +37,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  dcfs!
   fargo!
   jeweler
   rake

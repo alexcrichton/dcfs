@@ -10,9 +10,10 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Alex Crichton"]
   s.date = %q{2010-09-02}
+  s.default_executable = %q{dcfs}
   s.description = %q{DCFS}
   s.email = ["alex@alexcrichton.com"]
-  s.executables = ["dcfs", "tmp"]
+  s.executables = ["dcfs"]
   s.extensions = ["vendor/fusefs/ext/extconf.rb"]
   s.files = [
     "VERSION",

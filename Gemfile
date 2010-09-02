@@ -1,6 +1,6 @@
 source :rubygems
 
-gem 'fargo', :path => '../fargo'
+gem 'fargo', :git => 'git://github.com/alexcrichton/fargo.git'
 
 gem 'dcfs', :path => '.'
 
