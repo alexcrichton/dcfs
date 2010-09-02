@@ -40,8 +40,10 @@ void rfuseconninfo2fuseconninfo(VALUE rfuseconninfo,struct fuse_conn_info *fusec
   fuseconninfo->async_read    = FIX2UINT(rb_funcall(rfuseconninfo,rb_intern("async_read"),0));
   fuseconninfo->max_write     = FIX2UINT(rb_funcall(rfuseconninfo,rb_intern("max_write"),0));
   fuseconninfo->max_readahead = FIX2UINT(rb_funcall(rfuseconninfo,rb_intern("max_readahead"),0));
+#ifndef __APPLE__
   fuseconninfo->capable       = FIX2UINT(rb_funcall(rfuseconninfo,rb_intern("capable"),0));
   fuseconninfo->want          = FIX2UINT(rb_funcall(rfuseconninfo,rb_intern("want"),0));
+#endif
 }
 
 struct fuse_args * rarray2fuseargs(VALUE rarray){
