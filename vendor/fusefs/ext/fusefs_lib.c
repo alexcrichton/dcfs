@@ -497,7 +497,7 @@ rf_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
     if (TYPE(cur_entry) != T_STRING)
       continue;
 
-    filler(buf,STR2CSTR(cur_entry),NULL,0);
+    filler(buf,StringValuePtr(cur_entry),NULL,0);
   }
   return 0;
 }
@@ -706,7 +706,9 @@ rf_open(const char *path, struct fuse_file_info *fi) {
     /* We have the body, now save it the entire contents to our
      * opened_file lists. */
     newfile = ALLOC(opened_file);
-    value = rb_str2cstr(body,&newfile->size);
+    // value = rb_str2cstr(body,&newfile->size);
+    value = RSTRING_PTR(body);
+    newfile->size = RSTRING_LEN(body);
     newfile->value = ALLOC_N(char,(newfile->size)+1);
     memcpy(newfile->value,value,newfile->size);
     newfile->value[newfile->size] = '\0';
@@ -761,7 +763,9 @@ rf_open(const char *path, struct fuse_file_info *fi) {
       /* We have the body, now save it the entire contents to our
        * opened_file lists. */
       newfile = ALLOC(opened_file);
-      value = rb_str2cstr(body,&newfile->size);
+      // value = rb_str2cstr(body,&newfile->size);
+      value = RSTRING_PTR(body);
+      newfile->size = RSTRING_LEN(body);
       newfile->value = ALLOC_N(char,(newfile->size)+1);
       memcpy(newfile->value,value,newfile->size);
       newfile->writesize = newfile->size+1;
@@ -1139,7 +1143,9 @@ rf_truncate(const char *path, off_t offset) {
       rf_call(path,id_write_to,newstr);
     } else {
       long size;
-      char *str = rb_str2cstr(body,&size);
+      // char *str = rb_str2cstr(body,&size);
+      char *str = RSTRING_PTR(body);
+      size = RSTRING_LEN(body);
 
       /* Just in case offset is bigger than the file. */
       if (offset >= size) return 0;
@@ -1318,8 +1324,8 @@ rf_read(const char *path, char *buf, size_t size, off_t offset,
       return 0;
     if (TYPE(ret) != T_STRING)
       return 0;
-    memcpy(buf, RSTRING(ret)->ptr, RSTRING(ret)->len);
-    return RSTRING(ret)->len;
+    memcpy(buf, RSTRING_PTR(ret), RSTRING_LEN(ret));
+    return RSTRING_LEN(ret);
   }
 
   /* Is there anything left to read? */
@@ -1459,17 +1465,17 @@ rf_mount_to(int argc, VALUE *argv, VALUE self) {
 
   for (i = 1;i < argc; i++) {
     Check_Type(argv[i], T_STRING);
-    cur = STR2CSTR(argv[i]);
+    cur = StringValuePtr(argv[i]);
     if (!rf_valid_option(cur)) {
       rb_raise(rb_eArgError,"mount_under: \"%s\" - invalid argument.", cur);
       return Qnil;
     }
-    snprintf(opts2,1024,"%s,%s",opts,STR2CSTR(argv[i]));
+    snprintf(opts2,1024,"%s,%s",opts,StringValuePtr(argv[i]));
     strcpy(opts,opts2);
   }
 
   rb_iv_set(cFuseFS,"@mountpoint",mountpoint);
-  fusefs_setup(STR2CSTR(mountpoint), &rf_oper, opts);
+  fusefs_setup(StringValuePtr(mountpoint), &rf_oper, opts);
   return Qtrue;
 }
 

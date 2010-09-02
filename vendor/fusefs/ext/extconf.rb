@@ -4,6 +4,10 @@
 # This uses mkmf
 require 'mkmf'
 
+if RUBY_VERSION =~ /1.9/
+  $CFLAGS << ' -DRUBY_19'
+end
+
 # This allows --with-fuse-dir, --with-fuse-lib, 
 dir_config('fuse')
 
