@@ -2,7 +2,7 @@ source :rubygems
 
 gem 'fargo', :path => '../fargo'
 
-gem 'dtellafs', :path => '.'
+gem 'dcfs', :path => '.'
 
 group :development do
   gem 'jeweler'

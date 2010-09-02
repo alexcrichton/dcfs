@@ -5,12 +5,12 @@ require 'jeweler'
 require 'rspec/core/rake_task'
 
 Jeweler::Tasks.new do |gem|
-  gem.name        = 'dtellafs'
+  gem.name        = 'dcfs'
   gem.authors     = ['Alex Crichton']
-  gem.description = 'Dtella FS'
-  gem.summary     = 'A filesystem for Dtella implemented in FUSE'
+  gem.description = 'DCFS'
+  gem.summary     = 'A FUSE filesystem backed by the DC protocol'
   gem.email       = ['alex@alexcrichton.com']
-  gem.homepage    = 'http://github.com/alexcrichton/dtellafs'
+  gem.homepage    = 'http://github.com/alexcrichton/dcfs'
 
   # gem.add_bundler_dependencies
   gem.files = FileList['lib/**/*.rb']

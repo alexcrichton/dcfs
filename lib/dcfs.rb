@@ -5,6 +5,6 @@ rescue LoadError
   require File.expand_path('../../vendor/fusefs/lib/fusefs', __FILE__)
 end
 
-module DtellaFS
+module DCFS
   autoload :VERSION, 'dtellafs/version'
 end
