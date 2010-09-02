@@ -51,10 +51,12 @@ module DtellaFS
     end #getattr
 
     def mkdir(ctx,path,mode)
+      raise Errno::EACCES
       @root.insert_obj(DtellaFS::Dir.new(::File.basename(path),mode),path)
     end #mkdir
 
     def mknod(ctx,path,mode,dev)
+      raise Errno::EACCES
       @root.insert_obj(DtellaFS::File.new(::File.basename(path),mode,ctx.uid,ctx.gid),path)
     end #mknod
 
@@ -68,17 +70,20 @@ module DtellaFS
     #end
 
     def chmod(ctx,path,mode)
+      raise Errno::EACCES
       d=@root.search(path)
       d.mode=mode
     end
 
     def chown(ctx,path,uid,gid)
+      raise Errno::EACCES
       d=@root.search(path)
       d.uid=uid
       d.gid=gid
     end
 
     def truncate(ctx,path,offset)
+      raise Errno::EACCES
       d=@root.search(path)
       d.content = d.content[0..offset]
     end
@@ -90,10 +95,12 @@ module DtellaFS
     end
 
     def unlink(ctx,path)
+      raise Errno::EACCES
       @root.remove_obj(path)
     end
 
     def rmdir(ctx,path)
+      raise Errno::EACCES
       @root.remove_obj(path)
     end
 
@@ -101,6 +108,7 @@ module DtellaFS
     #end
 
     def rename(ctx,path,as)
+      raise Errno::EACCES
       d = @root.search(path)
       @root.remove_obj(path)
       @root.insert_obj(d,path)
@@ -120,6 +128,7 @@ module DtellaFS
     end
 
     def write(ctx,path,buf,offset,fi)
+      raise Errno::EACCES
       d=@root.search(path)
       if (d.isdir) 
         raise Errno::EISDIR.new(path)

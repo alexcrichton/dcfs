@@ -4,7 +4,10 @@ require 'rubygems'
 require 'bundler/setup'
 require 'dtellafs'
 
-fo = DtellaFS::Fuse.new("/tmp/fuse",["allow_other"],["debug"],
+directory = File.expand_path('../tmp', __FILE__)
+FileUtils.mkdir_p directory
+
+fo = DtellaFS::Fuse.new(directory,["allow_other"],["debug"],
   DtellaFS::Dir.new("",493));
 #kernel:  default_permissions,allow_other,kernel_cache,large_read,direct_io
 #         max_read=N,fsname=NAME

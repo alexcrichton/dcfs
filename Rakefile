@@ -15,10 +15,10 @@ Jeweler::Tasks.new do |gem|
   # gem.add_bundler_dependencies
   gem.files = FileList['lib/**/*.rb']
   gem.files += FileList['lib/**/*.rake']
-  gem.files += Dir['vendor/rfuse-ng/**/*']
+  gem.files += Dir['vendor/fusefs/**/*']
   gem.files << 'VERSION'
   gem.test_files = []
-  gem.extensions = ["vendor/rfuse-ng/ext/extconf.rb"]
+  gem.extensions = ["vendor/fusefs/ext/extconf.rb"]
 end
 Jeweler::GemcutterTasks.new
 

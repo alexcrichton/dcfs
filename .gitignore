@@ -3,3 +3,4 @@ pkg
 *.bundle
 vendor/rfuse-ng/ext/Makefile
 vendor/rfuse-ng/pkg
+vendor/fusefs/ext/Makefile
