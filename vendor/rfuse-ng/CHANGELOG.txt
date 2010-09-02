@@ -1,0 +1,27 @@
+2010-06-20
+
+Only poll() and ioctl() are missing. Fixed compilation error
+on 64 bit systems and random segfault because of uninicialized
+memory
+
+2010-05-03: 0.3.0
+
+Fixed read() and write() bugs, updated example. Implemented
+truncate() in the example.
+
+Fuse operation fields are filled only, when the class respond_to the
+particular method.
+
+The example filesystem was tested with several hundred big files and
+all came back intact.
+
+2010-05-01: 0.2.0
+
+Switched to Fuse API 26 from 22. Fixed incompatibilities.
+Arranged fuse_op filling code, made a TODO list of missing
+functions.
+
+
+2010-05-01: 0.1
+
+Forked from rfuse, fixed compile warnings, gemified.
