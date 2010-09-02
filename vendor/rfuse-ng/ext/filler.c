@@ -19,7 +19,7 @@ VALUE rfiller_push(VALUE self, VALUE name, VALUE stat, VALUE offset) {
   struct stat st;
   memset(&st, 0, sizeof(st));
   rstat2stat(stat,&st);
-  f->filler(f->buffer,STR2CSTR(name),&st,NUM2LONG(offset));
+  f->filler(f->buffer,StringValuePtr(name),&st,NUM2LONG(offset));
   return self;
 }
 
@@ -29,7 +29,7 @@ VALUE rfiller_push_old(VALUE self, VALUE name, VALUE type, VALUE inode) {
   Data_Get_Struct(self,struct filler_t,f);
   // TODO: architecture dependent int types
   printf("Before df\n");
-  f->df(f->dh, STR2CSTR(name), NUM2INT(type), NUM2INT(inode));
+  f->df(f->dh, StringValuePtr(name), NUM2INT(type), NUM2INT(inode));
   printf("After df\n");
   return self;
 }

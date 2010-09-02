@@ -52,7 +52,7 @@ struct fuse_args * rarray2fuseargs(VALUE rarray){
 
   struct fuse_args *args = malloc(sizeof(struct fuse_args));
 
-  args->argc      = RARRAY(rarray)->len;
+  args->argc      = RARRAY_LEN(rarray);
   args->argv      = malloc(args->argc * sizeof(char *) + 1);
   /* Nope, this isn't really 'allocated'. The elements
    * of this array shouldn't be freed */
@@ -61,9 +61,9 @@ struct fuse_args * rarray2fuseargs(VALUE rarray){
   int i;
   VALUE v;
   for(i = 0; i < args->argc; i++) {
-    v = RARRAY(rarray)->ptr[i];
+    v = RARRAY_PTR(rarray)[i];
     Check_Type(v, T_STRING);
-    args->argv[i] = STR2CSTR(RSTRING(v));
+    args->argv[i] = RSTRING_PTR(v);
   }
   args->argv[args->argc] = NULL;
   

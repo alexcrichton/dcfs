@@ -32,9 +32,13 @@ static VALUE fuse_object;
 static int unsafe_return_error(VALUE *args)
 {
   VALUE info;
+#ifdef RUBY_19
+  info = rb_inspect((VALUE) rb_errinfo);
+#else
   info = rb_inspect(ruby_errinfo);
+#endif
   rb_backtrace();
-  printf ("ERROR %s\n",STR2CSTR(info));
+  printf ("ERROR %s\n",StringValuePtr(info));
   return rb_funcall(info,rb_intern("errno"),0);
 }
 
@@ -138,7 +142,7 @@ static int rf_readlink(const char *path, char *buf, size_t size)
   }
   else
   {
-    rbuf=STR2CSTR(res);
+    rbuf=StringValuePtr(res);
     strncpy(buf,rbuf,size);
     return 0;
   }
@@ -730,7 +734,9 @@ static int rf_read(const char *path,char * buf, size_t size,off_t offset,struct 
   else
   {
     length = NUM2LONG(rb_funcall(res, rb_intern("length"), 0));
-    rbuf = rb_str2cstr(res, &length);
+    rbuf = RSTRING_PTR(res);
+    length = RSTRING_LEN(res);
+
     if (length<=size)
     {
       memcpy(buf,rbuf,length);
@@ -890,7 +896,8 @@ static int rf_getxattr(const char *path,const char *name,char *buf,
   }
   else
   {
-    rbuf=rb_str2cstr(res,&length); //TODO protect this, too
+    rbuf = RSTRING_PTR(res); //TODO protect this, too
+    length = RSTRING_LEN(res);
     if (buf != NULL)
     {
       memcpy(buf,rbuf,length); //First call is just to get the length
@@ -931,7 +938,8 @@ static int rf_listxattr(const char *path,char *buf,
   }
   else
   {
-    rbuf=rb_str2cstr(res,(long *)&length); //TODO protect this, too
+    rbuf = RSTRING_PTR(res); //TODO protect this, too
+    length = RSTRING_LEN(res);
     if (buf != NULL)
     {
       if (length<=size)
@@ -1522,7 +1530,7 @@ VALUE rf_invalidate(VALUE self,VALUE path)
 {
   struct intern_fuse *inf;
   Data_Get_Struct(self,struct intern_fuse,inf);
-  return fuse_invalidate(inf->fuse,STR2CSTR(path)); //TODO: check if str?
+  return fuse_invalidate(inf->fuse,StringValuePtr(path)); //TODO: check if str?
 }
 
 #define RESPOND_TO(obj,methodname) \
@@ -1632,7 +1640,7 @@ static VALUE rf_initialize(
     *kargs = rarray2fuseargs(kernelopts),
     *largs = rarray2fuseargs(libopts);
 
-  intern_fuse_init(inf, STR2CSTR(mountpoint), kargs, largs);
+  intern_fuse_init(inf, StringValuePtr(mountpoint), kargs, largs);
 
   //TODO this won't work with multithreading!!!
   fuse_object=self;
