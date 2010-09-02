@@ -14,30 +14,21 @@ Gem::Specification.new do |s|
   s.email = %q{giganetom@gmail.com}
   s.extensions = ["ext/extconf.rb"]
   s.files = [
-    "CHANGELOG.txt",
-     "LICENSE",
-     "README.ng",
+    "README.ng",
      "README.rfuse",
-     "Rakefile",
-     "THANKS",
-     "TODO.txt",
      "ext/context.c",
      "ext/context.h",
-     "ext/extconf.rb",
      "ext/file_info.c",
      "ext/file_info.h",
      "ext/filler.c",
      "ext/filler.h",
-     "ext/gem_make.out",
      "ext/helper.c",
      "ext/helper.h",
      "ext/intern_rfuse.c",
      "ext/intern_rfuse.h",
      "ext/rfuse.c",
      "ext/rfuse.h",
-     "ext/rfuse_mod.c",
-     "sample/test-ruby.rb",
-     "test/runtest"
+     "ext/rfuse_mod.c"
   ]
   s.homepage = %q{http://rubyforge.org/projects/rfuse-ng}
   s.licenses = ["LGPL"]
