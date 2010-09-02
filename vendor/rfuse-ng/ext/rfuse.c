@@ -33,7 +33,7 @@ static int unsafe_return_error(VALUE *args)
 {
   VALUE info;
 #ifdef RUBY_19
-  info = rb_inspect((VALUE) rb_errinfo);
+  info = rb_inspect(rb_errinfo());
 #else
   info = rb_inspect(ruby_errinfo);
 #endif
