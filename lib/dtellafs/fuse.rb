@@ -1,5 +1,3 @@
-require 'rfuse_ng'
-
 module DtellaFS
   class Fuse < RFuse::Fuse
 

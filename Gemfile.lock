@@ -2,14 +2,6 @@ PATH
   remote: .
   specs:
     dtellafs (0.0.1)
-      dtellafs
-      fargo
-      rfuse-ng
-
-PATH
-  remote: vendor/rfuse-ng
-  specs:
-    rfuse-ng (0.4.0)
 
 PATH
   remote: /Users/alex/code/ruby/fargo
@@ -49,5 +41,4 @@ DEPENDENCIES
   jeweler
   rake
   rcov
-  rfuse-ng!
   rspec (>= 2.0.0.beta.19)

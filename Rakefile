@@ -12,11 +12,13 @@ Jeweler::Tasks.new do |gem|
   gem.email       = ['alex@alexcrichton.com']
   gem.homepage    = 'http://github.com/alexcrichton/dtellafs'
 
-  gem.add_bundler_dependencies
+  # gem.add_bundler_dependencies
   gem.files = FileList['lib/**/*.rb']
   gem.files += FileList['lib/**/*.rake']
+  gem.files += Dir['vendor/rfuse-ng/**/*']
   gem.files << 'VERSION'
   gem.test_files = []
+  gem.extensions = ["vendor/rfuse-ng/ext/extconf.rb"]
 end
 Jeweler::GemcutterTasks.new
 

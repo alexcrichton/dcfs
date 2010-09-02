@@ -14,6 +14,7 @@ Gem::Specification.new do |s|
   s.description = %q{Dtella FS}
   s.email = ["alex@alexcrichton.com"]
   s.executables = ["dtellafs"]
+  s.extensions = ["vendor/rfuse-ng/ext/extconf.rb"]
   s.files = [
     "VERSION",
      "lib/dtellafs.rb",
@@ -22,7 +23,34 @@ Gem::Specification.new do |s|
      "lib/dtellafs/fuse.rb",
      "lib/dtellafs/stat.rb",
      "lib/dtellafs/stat_vfs.rb",
-     "lib/dtellafs/version.rb"
+     "lib/dtellafs/version.rb",
+     "vendor/rfuse-ng/CHANGELOG.txt",
+     "vendor/rfuse-ng/LICENSE",
+     "vendor/rfuse-ng/README.ng",
+     "vendor/rfuse-ng/README.rfuse",
+     "vendor/rfuse-ng/Rakefile",
+     "vendor/rfuse-ng/THANKS",
+     "vendor/rfuse-ng/TODO.txt",
+     "vendor/rfuse-ng/ext/Makefile",
+     "vendor/rfuse-ng/ext/context.c",
+     "vendor/rfuse-ng/ext/context.h",
+     "vendor/rfuse-ng/ext/extconf.rb",
+     "vendor/rfuse-ng/ext/file_info.c",
+     "vendor/rfuse-ng/ext/file_info.h",
+     "vendor/rfuse-ng/ext/filler.c",
+     "vendor/rfuse-ng/ext/filler.h",
+     "vendor/rfuse-ng/ext/gem_make.out",
+     "vendor/rfuse-ng/ext/helper.c",
+     "vendor/rfuse-ng/ext/helper.h",
+     "vendor/rfuse-ng/ext/intern_rfuse.c",
+     "vendor/rfuse-ng/ext/intern_rfuse.h",
+     "vendor/rfuse-ng/ext/rfuse.c",
+     "vendor/rfuse-ng/ext/rfuse.h",
+     "vendor/rfuse-ng/ext/rfuse_mod.c",
+     "vendor/rfuse-ng/mkmf.log",
+     "vendor/rfuse-ng/pkg/rfuse-ng-0.4.0.gem",
+     "vendor/rfuse-ng/sample/test-ruby.rb",
+     "vendor/rfuse-ng/test/runtest"
   ]
   s.homepage = %q{http://github.com/alexcrichton/dtellafs}
   s.rdoc_options = ["--charset=UTF-8"]
@@ -35,30 +63,9 @@ Gem::Specification.new do |s|
     s.specification_version = 3
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<rfuse-ng>, [">= 0"])
-      s.add_runtime_dependency(%q<fargo>, [">= 0"])
-      s.add_runtime_dependency(%q<dtellafs>, [">= 0"])
-      s.add_development_dependency(%q<jeweler>, [">= 0"])
-      s.add_development_dependency(%q<rake>, [">= 0"])
-      s.add_development_dependency(%q<rcov>, [">= 0"])
-      s.add_development_dependency(%q<rspec>, [">= 2.0.0.beta.19"])
     else
-      s.add_dependency(%q<rfuse-ng>, [">= 0"])
-      s.add_dependency(%q<fargo>, [">= 0"])
-      s.add_dependency(%q<dtellafs>, [">= 0"])
-      s.add_dependency(%q<jeweler>, [">= 0"])
-      s.add_dependency(%q<rake>, [">= 0"])
-      s.add_dependency(%q<rcov>, [">= 0"])
-      s.add_dependency(%q<rspec>, [">= 2.0.0.beta.19"])
     end
   else
-    s.add_dependency(%q<rfuse-ng>, [">= 0"])
-    s.add_dependency(%q<fargo>, [">= 0"])
-    s.add_dependency(%q<dtellafs>, [">= 0"])
-    s.add_dependency(%q<jeweler>, [">= 0"])
-    s.add_dependency(%q<rake>, [">= 0"])
-    s.add_dependency(%q<rcov>, [">= 0"])
-    s.add_dependency(%q<rspec>, [">= 2.0.0.beta.19"])
   end
 end
 

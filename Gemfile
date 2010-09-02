@@ -1,6 +1,5 @@
 source :rubygems
 
-gem 'rfuse-ng', :path => './vendor/rfuse-ng'
 gem 'fargo', :path => '../fargo'
 
 gem 'dtellafs', :path => '.'

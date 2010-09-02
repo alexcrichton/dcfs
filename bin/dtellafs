@@ -5,7 +5,7 @@ require 'bundler/setup'
 require 'dtellafs'
 
 fo = DtellaFS::Fuse.new("/tmp/fuse",["allow_other"],["debug"],
-  DtellaFS::Fuse.new("",493));
+  DtellaFS::Dir.new("",493));
 #kernel:  default_permissions,allow_other,kernel_cache,large_read,direct_io
 #         max_read=N,fsname=NAME
 #library: debug,hard_remove
