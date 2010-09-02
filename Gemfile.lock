@@ -3,6 +3,11 @@ PATH
   specs:
     rfuse-ng (0.4.0)
 
+PATH
+  remote: /Users/alex/code/ruby/fargo
+  specs:
+    fargo (0.0.1)
+
 GEM
   specs:
 
@@ -10,4 +15,5 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  fargo!
   rfuse-ng!
