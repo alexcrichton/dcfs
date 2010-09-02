@@ -1,0 +1,13 @@
+PATH
+  remote: vendor/rfuse-ng
+  specs:
+    rfuse-ng (0.4.0)
+
+GEM
+  specs:
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  rfuse-ng!

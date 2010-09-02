@@ -1,2 +1,4 @@
 *.o
+*.bundle
 vendor/rfuse-ng/ext/Makefile
+vendor/rfuse-ng/pkg
