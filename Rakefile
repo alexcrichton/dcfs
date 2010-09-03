@@ -18,7 +18,7 @@ Jeweler::Tasks.new do |gem|
   gem.files += Dir['vendor/fusefs/**/*']
   gem.files << 'VERSION'
   gem.test_files = []
-  gem.extensions = ["vendor/fusefs/ext/extconf.rb"]
+  gem.extensions = ['vendor/fusefs/ext/extconf.rb']
 end
 Jeweler::GemcutterTasks.new
 
@@ -29,7 +29,7 @@ if RUBY_VERSION < '1.9'
   RSpec::Core::RakeTask.new :rcov => :cleanup_rcov_files do |t|
     t.rcov = true
     t.rcov_opts =  %[-Ilib -Ispec --exclude "gems/*,spec/support,spec/paste,spec/spec_helper.rb,db/*,/Library/Ruby/*,config/*"]
-    t.rcov_opts << %[--no-html --aggregate coverage.data]
+    t.rcov_opts << '--no-html --aggregate coverage.data'
   end
 end
 
