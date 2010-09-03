@@ -328,30 +328,7 @@ rf_getattr(const char *path, struct stat *stbuf) {
   memset(stbuf, 0, sizeof(struct stat));
 
   /* "/" is automatically a dir. */
-  if (strcmp(path,"/") == 0 || 1) {
-#ifdef __APPLE__
-    stbuf->st_mode = (unsigned int) (S_IFDIR | 0555);
-    stbuf->st_size = (unsigned long) 4096;
-    stbuf->st_nlink = (unsigned int) 1;
-    stbuf->st_uid = (unsigned int) getuid();
-    stbuf->st_gid = (unsigned int) getgid();
-    stbuf->st_mtime = (unsigned long) rf_intval(path,id_mtime,init_time);
-    stbuf->st_atime = (unsigned long) rf_intval(path,id_atime,init_time);
-    stbuf->st_ctime = (unsigned long) rf_intval(path,id_ctime,init_time);
-
-    stbuf->st_ino = S_IFDIR | 0555; // sets mode
-    stbuf->st_size = 4096;
-    stbuf->st_uid = getgid(); // sets gid
-    stbuf->st_gid = getuid();
-    stbuf->st_dev = 342;
-    stbuf->st_rdev = 344; // sets atime
-    stbuf->st_mtime = 400;
-    stbuf->st_atime = 42;
-    stbuf->st_ctime = 424;
-    stbuf->st_mode = 42451;
-    stbuf->st_nlink = 24411;
-    debug("%d\n", sizeof(struct stat));
-#else
+  if (strcmp(path,"/") == 0) {
     stbuf->st_mode = S_IFDIR | 0555;
     stbuf->st_size = 4096;
     stbuf->st_nlink = 1;
@@ -360,18 +337,6 @@ rf_getattr(const char *path, struct stat *stbuf) {
     stbuf->st_mtime = rf_intval(path,id_mtime,init_time);
     stbuf->st_atime = rf_intval(path,id_atime,init_time);
     stbuf->st_ctime = rf_intval(path,id_ctime,init_time);
-#endif
-    debug("dev:\t%d\n", stbuf->st_dev);
-    debug("ino:\t%d\n", stbuf->st_ino);
-    debug("mode:\t%d\n", stbuf->st_mode);
-    debug("nlink:\t%d\n", stbuf->st_nlink);
-    debug("uid:\t%d\n", stbuf->st_uid);
-    debug("gid:\t%d\n", stbuf->st_gid);
-    debug("rdev:\t%d\n", stbuf->st_rdev);
-    debug("size:\t%d\n", stbuf->st_size);
-    debug("atime:\t%d\n", stbuf->st_atime);
-    debug("mtime:\t%d\n", stbuf->st_mtime);
-    debug("ctime:\t%d\n", stbuf->st_ctime);
     
     return 0;
   }
@@ -422,7 +387,7 @@ rf_getattr(const char *path, struct stat *stbuf) {
     stbuf->st_mtime = init_time;
     stbuf->st_atime = init_time;
     stbuf->st_ctime = init_time;
-    stbuf->st_ino = 2442591;
+
     return 0;
   case 1:
     debug(" Yes, but doesn't exist.\n");
@@ -446,18 +411,18 @@ rf_getattr(const char *path, struct stat *stbuf) {
     stbuf->st_mtime = rf_intval(path,id_mtime,init_time);
     stbuf->st_atime = rf_intval(path,id_atime,init_time);
     stbuf->st_ctime = rf_intval(path,id_ctime,init_time);
-    stbuf->st_ino = 2442591;
+
     return 0;
   } else if (RTEST(rf_call(path, is_file,Qnil))) {
     debug(" file.\n");
-    stbuf->st_mode = S_IFMT | S_IFREG | S_IRUSR | S_IRGRP | S_IROTH;
+    stbuf->st_mode = S_IFREG | 0444;
     if (RTEST(rf_call(path,can_write,Qnil))) {
       debug("can write");
-      stbuf->st_mode |= S_IWUSR | S_IWGRP | S_IWOTH;
+      stbuf->st_mode |= 0222;
     }
     if (RTEST(rf_call(path,is_executable,Qnil))) {
       debug("can execute");
-      stbuf->st_mode |= S_IXUSR | S_IXGRP | S_IXOTH;
+      stbuf->st_mode |= 0111;
     }
     stbuf->st_nlink = 1 + file_openedP(path);
     stbuf->st_size = rf_intval(path,id_size,0);
@@ -466,7 +431,7 @@ rf_getattr(const char *path, struct stat *stbuf) {
     stbuf->st_mtime = rf_intval(path,id_mtime,init_time);
     stbuf->st_atime = rf_intval(path,id_atime,init_time);
     stbuf->st_ctime = rf_intval(path,id_ctime,init_time);
-    stbuf->st_ino = 2442592;
+
     return 0;
   }
   debug(" nonexistant.\n");

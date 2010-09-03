@@ -14,7 +14,7 @@ dir_config('fuse')
 $CFLAGS << ' -I/usr/local/include'
 
 # Make sure FUSE is found.
-unless have_library('fuse') 
+unless have_library('fuse_ino64') || have_library('fuse') 
   puts "No FUSE library found!"
   exit
 end
