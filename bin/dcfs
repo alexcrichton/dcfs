@@ -4,27 +4,7 @@ require 'rubygems'
 require 'bundler/setup'
 require 'dcfs'
 
-class HelloDir
-  def contents(path)
-    # puts "contents: #{path}"
-    ['hello.txt']
-  end
-  def size(path)
-    # puts "sizing: #{path}"
-    read_file(path).size
-  end
-  def file?(path)
-    # puts "file?: #{path}"
-    path == '/hello.txt'
-  end
-  def read_file(path)
-    # puts "reading: #{path}"
-    "Hello, World!\n"
-  end
-end
-
-hellodir = HelloDir.new
-FuseFS.set_root( hellodir )
+FuseFS.set_root DCFS::Root.new
 
 # Mount under a directory given on the command line.
 FuseFS.mount_under File.expand_path(ARGV.shift)

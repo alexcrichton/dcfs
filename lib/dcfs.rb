@@ -6,5 +6,6 @@ rescue LoadError
 end
 
 module DCFS
+  autoload :Root, 'dcfs/root'
   autoload :VERSION, 'dcfs/version'
 end
