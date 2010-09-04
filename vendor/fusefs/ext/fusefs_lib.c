@@ -4,7 +4,7 @@
  * a Rubyish way.
  */
 
-#define DEBUG
+// #define DEBUG
 
 #define FUSE_USE_VERSION 26
 #define _FILE_OFFSET_BITS 64
