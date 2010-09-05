@@ -4,7 +4,7 @@
 #
 # This includes helper functions, common uses, etc.
 
-require 'fusefs_lib'
+require File.expand_path('../../ext/fusefs_lib', __FILE__)
 
 module FuseFS
   VERSION = '0.7.0'
