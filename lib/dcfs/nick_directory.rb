@@ -1,14 +1,22 @@
+require 'active_support/core_ext/object/try'
+
 module DCFS
   class NickDirectory
 
     def initialize nick, client
       @nick, @client = nick, client
+
+      @client.subscribe do |type, message|
+        if type == :file_list && message[:nick] == @nick
+          @file_list = @client.file_list(@nick)
+        end
+      end
       # load_file_list
     end
 
     def contents path
       load_file_list if @file_list.nil?
-      drilldown(path).keys
+      drilldown(path).try :keys
     end
 
     def size(path)
@@ -37,7 +45,9 @@ module DCFS
     protected
     
     def drilldown path
-      path.split('/').inject(@file_list) { |hash, part| hash[part] }
+      path.split('/').inject(@file_list) { |hash, part| 
+        hash ? hash[part] : nil
+      }
     end
     
     def load_file_list
