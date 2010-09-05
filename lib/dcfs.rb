@@ -6,6 +6,7 @@ rescue LoadError
 end
 
 module DCFS
+  autoload :NickDirectory, 'dcfs/nick_directory'
   autoload :Root, 'dcfs/root'
   autoload :VERSION, 'dcfs/version'
 end
