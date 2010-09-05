@@ -6,11 +6,11 @@ module DCFS
     def initialize nick, client
       @nick, @client = nick, client
 
-      @client.subscribe do |type, message|
-        if type == :file_list && message[:nick] == @nick
-          @file_list = @client.file_list(@nick)
-        end
-      end
+      # @client.subscribe do |type, message|
+      #   if type == :file_list && message[:nick] == @nick
+      #     @file_list = @client.file_list(@nick)
+      #   end
+      # end
       # load_file_list
     end
 
@@ -51,7 +51,7 @@ module DCFS
     end
     
     def load_file_list
-      @file_list = @client.file_list(@nick) || {}
+      @file_list = @client.file_list!(@nick) || {}
     end
   end
 end

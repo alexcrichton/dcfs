@@ -5,7 +5,6 @@ gem 'fargo', :path => '../fargo'
 gem 'dcfs', :path => '.'
 
 group :development do
-  gem 'jeweler'
   gem 'rake'
 
   gem 'rcov', :platforms => :ruby_18
