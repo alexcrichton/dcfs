@@ -6,8 +6,11 @@ Bundler.setup :default
 
 require 'dcfs'
 
-FuseFS.set_root DCFS::Root.new
+root = DCFS::Root.new
+FuseFS.set_root root
 
 # Mount under a directory given on the command line.
 FuseFS.mount_under File.expand_path(ARGV.shift)
+root.spawn_client_process
+
 FuseFS.run
