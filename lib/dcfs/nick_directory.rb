@@ -29,7 +29,7 @@ module DCFS
       drilldown(path).is_a? Struct
     end
 
-    def read_file(path)
+    def read_file path
       "Hello, World!\n"
     end
 
@@ -42,8 +42,11 @@ module DCFS
     end
 
     def load_file_list
-      @file_list = @client.file_list!(@nick)
-      # @file_list = {}
+      # Schedule the file list to be gotten. Don't wait for it here. It'll show
+      # up once downloaded via the subscribe in the root directory
+      @client.file_list(@nick)
+
+      @file_list = {}
     end
   end
 end
