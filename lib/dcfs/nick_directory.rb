@@ -29,8 +29,38 @@ module DCFS
       drilldown(path).is_a? Struct
     end
 
-    def read_file path
-      "Hello, World!\n"
+    def raw_open path, mode
+      mode == 'r'
+    end
+
+    def raw_read path, off, size
+      struct = drilldown(path)
+
+      thread = Thread.current
+      data   = nil
+
+      block = lambda { |type, message|
+        val = false
+
+        if message[:nick] == @nick
+          case type
+            when :download_finished, :download_failed, :download_disconnected
+              if File.exists? message[:file]
+                data = File.read message[:file]
+                File.delete message[:file]
+              end
+              val = true
+          end
+        end
+
+        val
+      }
+
+      @client.timeout_response(10, block) do
+        @client.download @nick, struct.file, struct.tth, size, off
+      end
+
+      data
     end
 
     protected
