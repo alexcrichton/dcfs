@@ -1,5 +1,6 @@
 require 'fargo'
 require 'drb'
+require 'active_support/core_ext/object/try'
 
 module DCFS
   class Root
@@ -78,6 +79,10 @@ module DCFS
     def raw_close path
       puts "raw closing #{path.inspect}"
       @opened_files.delete(path).try(:remove_cache)
+    rescue => e
+      puts "Error closing!: #{e}"
+      puts e.backtrace.join("\n")
+      nil
     end
 
     protected
