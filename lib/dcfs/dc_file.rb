@@ -56,8 +56,6 @@ module DCFS
     end
 
     def download_remotely size, offset
-      # size = @download.size - offset if size + offset > @download.size
-
       if @start == -1 || @end == -1 || offset < @start
         dlstart = offset
         dlend   = offset + [size, block_size].max
@@ -95,7 +93,8 @@ module DCFS
 
       # 500K/s should be a reasonable speed to assume. Slower than that is just
       # silly anyway.
-      @client.timeout_response((dlend - dlstart) / 500.kilobytes, block) do
+      timeout = [(dlend - dlstart) / 500.kilobytes, 1].max
+      @client.timeout_response(timeout, block) do
         @client.download @nick, @download.name, @download.tth,
           dlend - dlstart, dlstart
       end
