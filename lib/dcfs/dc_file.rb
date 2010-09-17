@@ -77,7 +77,7 @@ module DCFS
           end
         end
 
-        size + offset < @end
+        size + offset < @end || !@fargo_downloading
       }
 
       @downloading = true
@@ -87,7 +87,7 @@ module DCFS
       # silly anyway.
       @client.timeout_response((dlend - dlstart) / 500.kilobytes, block) do
         @client.download @nick, @download.name, @download.tth,
-          -1, dlstart
+          dlend - dlstart + 1, dlstart
       end
 
       @downloading = false
