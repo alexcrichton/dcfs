@@ -158,7 +158,7 @@ editor_fileP(const char *path) {
 
   if (!handle_editor)
     return 0;
-  
+
   /* Already created one */
   for (ptr = editor_head ; ptr ; ptr = ptr->next) {
     if (strcasecmp(ptr->path,path) == 0) {
@@ -179,7 +179,7 @@ editor_fileP(const char *path) {
     int len;
     if (*ptr != '.') break;
 
-    // ends with .sw? 
+    // ends with .sw?
     ptr = strrchr(ptr,'.');
     len = strlen(ptr);
     // .swp or .swpx
@@ -268,14 +268,14 @@ rf_mcall(const char *path, ID method, char *methname, VALUE arg) {
 
   /* Set up the call and make it. */
   result = rb_protect(rf_protected, methargs, &error);
- 
+
   /* Did it error? */
   if (error) return Qnil;
 
   return result;
 }
 
-/* 
+/*
  * rf_getint:
  *
  * Used for: An integer wrapper around rf_call
@@ -296,7 +296,38 @@ rf_mintval(const char *path,ID method,char *methname,int def) {
     }
 
     retval = rb_protect(rf_int_protected, arg, &error);
-   
+
+    /* Did it error? */
+    if (error) return def;
+
+    return rb_num2long(retval);
+  } else {
+    return def;
+  }
+}
+
+/*
+ * rf_longval:
+ *
+ * Used for: An integer wrapper around rf_call
+ */
+#define rf_longval(p,m,a) \
+  rf_mlongval(p,m, c_ ## m, a)
+
+static unsigned long
+rf_mlongval(const char *path,ID method,char *methname,int def) {
+  VALUE arg = rf_mcall(path,method,methname,Qnil);
+  VALUE retval;
+  int   error;
+  if (FIXNUM_P(arg)) {
+    return FIX2ULONG(arg);
+  } else if (RTEST(arg)) {
+    if (!rb_respond_to(arg,id_to_i)) {
+      return def;
+    }
+
+    retval = rb_protect(rf_int_protected, arg, &error);
+
     /* Did it error? */
     if (error) return def;
 
@@ -337,7 +368,7 @@ rf_getattr(const char *path, struct stat *stbuf) {
     stbuf->st_mtime = rf_intval(path,id_mtime,init_time);
     stbuf->st_atime = rf_intval(path,id_atime,init_time);
     stbuf->st_ctime = rf_intval(path,id_ctime,init_time);
-    
+
     return 0;
   }
 
@@ -425,7 +456,7 @@ rf_getattr(const char *path, struct stat *stbuf) {
       stbuf->st_mode |= 0111;
     }
     stbuf->st_nlink = 1 + file_openedP(path);
-    stbuf->st_size = rf_intval(path,id_size,0);
+    stbuf->st_size = rf_longval(path,id_size,0);
     stbuf->st_uid = getuid();
     stbuf->st_gid = getgid();
     stbuf->st_mtime = rf_intval(path,id_mtime,init_time);
@@ -482,7 +513,7 @@ rf_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
     }
     debug(" yes.\n");
   }
- 
+
   /* These two are Always in a directory */
   filler(buf,".", NULL, 0);
   filler(buf,"..", NULL, 0);
@@ -523,7 +554,7 @@ rf_mknod(const char *path, mode_t umode, dev_t rdev) {
 
   debug("rf_mknod(%s)\n", path);
   /* Make sure it's not already open. */
-  
+
   debug("  Checking if it's opened ...");
   if (file_openedP(path)) {
     debug(" yes.\n");
@@ -644,7 +675,7 @@ rf_open(const char *path, struct fuse_file_info *fi) {
     return -EACCES;
   }
   debug(" no.\n");
- 
+
   debug("Checking if an editor file is requested...");
   switch (editor_fileP(path)) {
   case 2:
@@ -1000,7 +1031,7 @@ rf_rename(const char *path, const char *dest) {
     }
     debug(" yes.\n");
   }
- 
+
   /* Can we create the new one? */
   debug("  Checking if we can write to %s ...", dest);
   if (!RTEST(rf_call(dest,can_write,Qnil))) {
@@ -1097,7 +1128,7 @@ rf_unlink(const char *path) {
     return -EACCES;
   }
   debug(" no.\n");
- 
+
   /* Ok, remove it! */
   debug("  Removing it.\n");
   rf_call(path,id_delete,Qnil);
@@ -1137,7 +1168,7 @@ rf_truncate(const char *path, off_t offset) {
   if (!RTEST(rf_call(path,can_delete,Qnil))) {
     return -EACCES;
   }
- 
+
   /* If offset is 0, then we just overwrite it with an empty file. */
   if (offset > 0) {
     VALUE newstr = rb_str_new2("");
@@ -1183,7 +1214,7 @@ rf_mkdir(const char *path, mode_t mode) {
   /* Can we mkdir it? */
   if (!RTEST(rf_call(path,can_mkdir,Qnil)))
     return -EACCES;
- 
+
   /* Ok, mkdir it! */
   rf_call(path,id_mkdir,Qnil);
   return 0;
@@ -1210,7 +1241,7 @@ rf_rmdir(const char *path) {
   /* Can we rmdir it? */
   if (!RTEST(rf_call(path,can_rmdir,Qnil)))
     return -EACCES;
- 
+
   /* Ok, rmdir it! */
   rf_call(path,id_rmdir,Qnil);
   return 0;
@@ -1468,7 +1499,7 @@ rf_mount_to(int argc, VALUE *argv, VALUE self) {
 
   mountpoint = argv[0];
 
-  Check_Type(mountpoint, T_STRING); 
+  Check_Type(mountpoint, T_STRING);
 
   for (i = 1;i < argc; i++) {
     Check_Type(argv[i], T_STRING);
@@ -1520,7 +1551,6 @@ rf_process(VALUE self) {
   }
   return Qfalse;
 }
-
 
 /* rf_uid and rf_gid
  *
