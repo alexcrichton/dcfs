@@ -40,7 +40,7 @@ module DCFS
 
     def size path
       nick, path = split_path path
-      entity = drilldown path, file_list(nick)
+      entity     = drilldown path, file_list(nick)
       entity.is_a?(Struct) ? entity.size : 4096
     end
 

@@ -19,17 +19,11 @@ module DCFS
           raise 'Already downloading, why are you reading again!?'
         elsif @fargo_downloading
           puts 'Requested a read while fargo was downloading'
+
           # We're downloading from fargo, so wait for the downloaded amount to
           # exceed what we're asking for. If more is asked for, we'll do that
           # afterwards
-          block = lambda { |type, message| size + offset <= @end }
-
-          puts 'Waiting for fargo to finish downloading'
-
-          @client.timeout_response(size / 500.kilobytes, block) do
-            # Nothing to do, just gonna wait for the download to finish
-            # because it's gonna read everything we got
-          end
+          timeout_download(size, offset)
 
           puts 'Downloaded enough, now currently recursing'
 
@@ -48,6 +42,8 @@ module DCFS
           data = f.read size
         }
       end
+
+      puts "Requested #{size} bytes, actually read: #{data.try(:size)}"
 
       @last_read = Time.now
       @read_count += 1
@@ -72,31 +68,13 @@ module DCFS
       puts "Starting download at #{dlstart}, ending #{dlend}"
       puts "(#{dlend - dlstart})"
 
-      block = lambda { |type, message|
-        if message[:nick] == @nick
-          case type
-            when :download_progress
-              @end = @start + message[:size]
-              @cache_file = message[:file]
-            when :download_finished, :download_failed, :download_disconnected
-              @fargo_downloading = false
-          end
-        end
-
-        size + offset < @end || !@fargo_downloading
-      }
-
       @downloading = true
       @fargo_downloading = true
 
       puts "Downloading #{@download.inspect}"
 
-      # 500K/s should be a reasonable speed to assume. Slower than that is just
-      # silly anyway.
-      timeout = [(dlend - dlstart) / 500.kilobytes, 1].max
-      @client.timeout_response(timeout, block) do
-        @client.download @nick, @download.name, @download.tth,
-          dlend - dlstart, dlstart
+      timeout_download(size, offset) do
+        schedule_download dlend - dlstart, dlstart
       end
 
       @downloading = false
@@ -110,6 +88,41 @@ module DCFS
       @read_count = 0 if @last_read.nil? || @last_read > 20.seconds.ago
 
       10.megabytes * (2**@read_count)
+    end
+
+    protected
+
+    def timeout_download size, offset
+      # 500K/s should be a reasonable speed to assume. Slower than that is just
+      # silly anyway.
+      timeout = [size / 500.kilobytes, 10].max
+
+      block = lambda { |type, message|
+        size + offset <= @end || !@fargo_downloading
+      }
+
+      @client.timeout_response(timeout, block) do
+        yield if block_given?
+      end
+    end
+
+    def schedule_download size, offset
+      block = lambda { |type, message|
+        if message[:nick] == @nick
+          case type
+            when :download_progress
+              @end = @start + message[:size]
+              @cache_file = message[:file]
+            when :download_finished, :download_failed, :download_disconnected
+              @fargo_downloading = false
+              @client.unsubscribe &block
+          end
+        end
+      }
+
+      @client.subscribe &block
+      @client.download @nick, @download.name, @download.tth,
+          size, offset
     end
 
   end
