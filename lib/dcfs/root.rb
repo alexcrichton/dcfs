@@ -1,70 +1,101 @@
 require 'fargo'
 require 'drb'
 
-Thread.abort_on_exception = true
-
 module DCFS
-  class Root < FuseFS::MetaDir
+  class Root
 
     def initialize
-      @nicks = {}
-      super
+      @file_lists   = {}
+      @opened_files = {}
     end
 
     def contents path
-      subscribe if @client.nil?
+      if path == '/'
+        client.nicks || []
+      else
+        nick, path = split_path path
 
-      super
+        drilldown(path || '', file_list(nick)).keys
+      end
     end
 
-    def spawn_client_process
-      @client_pid = fork {
-        @real_client = Fargo::Client.new
+    def directory? path
+      nick, path = split_path path
+      if path == ''
+        client.nicks.include? nick
+      else
+        drilldown(path, file_list(nick)).is_a?(Hash)
+      end
+    end
 
-        DRb.start_service 'drbunix:///tmp/dcfs.sock', @real_client
-        @real_client.connect
-        DRb.thread.join
-      }
+    def file? path
+      nick, path = split_path path
+      if path == ''
+        false
+      else
+        drilldown(path, file_list(nick)).is_a?(Struct)
+      end
+    end
+
+    def size path
+      nick, path = split_path path
+      entity = drilldown path, file_list(nick)
+      entity.is_a?(Struct) ? entity.size : 4096
     end
 
     def client
       @client ||= begin
-        DRb.stop_service
-        DRb.start_service 'drbunix:///tmp/dcfs2.sock'
-        DRbObject.new nil, 'drbunix:///tmp/dcfs.sock'
+        DRb.start_service
+        DRbObject.new nil, 'druby://localhost:9090'
       end
+    end
+
+    def raw_open path, mode
+      puts "raw opening #{path.inspect}"
+      nick, subpath = split_path path
+
+      if mode == 'r'
+        @opened_files[path] = DCFile.new(nick, subpath, client,
+          drilldown(subpath, file_list(nick)))
+        true
+      else
+        false
+      end
+    end
+
+    def raw_read path, off, size
+      puts "raw reading #{path.inspect} with off #{off.inspect}:#{size.inspect}"
+      nick, subpath = split_path path
+
+      @opened_files[path].read size, off
+    end
+
+    def raw_close path
+      puts "raw closing #{path.inspect}"
+      @opened_files.delete(path).try(:remove_cache)
     end
 
     protected
 
-    def subscribe
-      client.nicks.each{ |n| register_nick n }
+    def drilldown path, list
+      path.split('/').inject(list) { |hash, part|
+        hash ? hash[part] : nil
+      }
+    end
 
-      client.subscribe do |type, map|
-        case type
-          when :hello
-            unless directory? map[:who]
-              register_nick map[:who]
-            end
-          when :nick_list
-            map[:nicks].each{ |n| register_nick n }
-          when :quit
-            unregister_nick map[:who]
-          when :hub_disconnected
-            # Clear out all directories?
-          when :file_list
-            @nicks[map[:nick]].file_list = client.file_list map[:nick]
-        end
+    def split_path path
+      nick, path = path.split('/', 3)[1..-1]
+      [nick, path || '']
+    end
+
+    def file_list nick
+      if @file_lists[nick] && @file_lists[nick].size > 0
+        return @file_lists[nick]
       end
-    end
 
-    def register_nick nick
-      mkdir '/' + nick, @nicks[nick] = DCFS::NickDirectory.new(nick, @client)
-    end
-
-    def unregister_nick nick
-      @nicks.delete nick
-      rmdir nick
+      list = client.file_list nick
+      list = {} unless list.is_a?(Hash)
+      @file_lists[nick] = list
     end
 
   end

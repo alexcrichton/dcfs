@@ -7,5 +7,6 @@ end
 module DCFS
   autoload :NickDirectory, 'dcfs/nick_directory'
   autoload :Root, 'dcfs/root'
+  autoload :DCFile, 'dcfs/dc_file'
   autoload :VERSION, 'dcfs/version'
 end
