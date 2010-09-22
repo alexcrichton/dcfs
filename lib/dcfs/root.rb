@@ -68,7 +68,6 @@ module DCFS
       puts "raw reading #{path.inspect} with off #{off.inspect}:#{size.inspect}"
       nick, subpath = split_path path
 
-      puts "Reading from: #{@opened_files[path].inspect}"
       @opened_files[path].read size, off
     rescue => e
       puts "Error reading!: #{e}"
