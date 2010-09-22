@@ -1,7 +1,10 @@
 require 'active_support/core_ext/numeric'
+require 'active_support/core_ext/module/synchronization'
 
 module DCFS
   class DCFile
+
+    @@read_lock = Mutex.new
 
     def initialize nick, path, client, download
       @nick, @path, @client, @download = nick, path, client, download
@@ -29,7 +32,7 @@ module DCFS
 
           # A lot of edge cases can happen here, recurse and let this handle it
           # again
-          return self.read size, offset
+          return self.read_without_synchronization size, offset
         else
           download_remotely size, offset
         end
@@ -50,6 +53,8 @@ module DCFS
 
       data
     end
+
+    synchronize :read, :with => :@@read_lock
 
     def download_remotely size, offset
       if @start == -1 || @end == -1 || offset < @start
