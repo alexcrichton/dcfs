@@ -1,4 +1,6 @@
 require 'active_support/core_ext/numeric'
+require 'active_support/core_ext/time/acts_like'
+require 'active_support/core_ext/time/calculations'
 require 'active_support/core_ext/module/synchronization'
 
 module DCFS
@@ -14,7 +16,11 @@ module DCFS
     end
 
     def read size, offset
+      p @start, @end
       size = @download.size - offset if size + offset > @download.size
+      p @start, @end
+      p size, offset
+      p @cache_file
 
       if size < @start || @end < size + offset || @cache_file.nil?
         if @downloading
@@ -46,10 +52,7 @@ module DCFS
         }
       end
 
-      puts "Requested #{size} bytes, actually read: #{data.try(:size)}"
-
       @last_read = Time.now
-      @read_count += 1
 
       data
     end
@@ -57,7 +60,7 @@ module DCFS
     synchronize :read, :with => :@@read_lock
 
     def download_remotely size, offset
-      if @start == -1 || @end == -1 || offset < @start
+      if @start == -1 || @end == -1 || offset < @start || offset - @end > 10 * size
         dlstart = offset
         dlend   = offset + [size, block_size].max
 
@@ -124,6 +127,8 @@ module DCFS
           end
         end
       }
+
+      @read_count += 1
 
       @client.subscribe &block
       @client.download @nick, @download.name, @download.tth,
