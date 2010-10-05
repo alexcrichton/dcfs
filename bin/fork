@@ -7,12 +7,8 @@ Bundler.setup :default
 require 'fargo'
 require 'drb'
 
-Thread.abort_on_exception = true
-
 client = Fargo::Client.new
 
 DRb.start_service 'druby://localhost:9090', client
 
-client.connect
-
-sleep 10000
+EventMachine.run{ client.connect }

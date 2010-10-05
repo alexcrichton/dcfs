@@ -7,5 +7,3 @@ require 'dcfs'
 RSpec.configure do |c|
   c.color_enabled = true
 end
-
-Dir[File.dirname(__FILE__) + '/support/*.rb'].each { |f| load f }

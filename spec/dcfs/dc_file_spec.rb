@@ -8,8 +8,8 @@ describe DCFS::DCFile do
     @file     = DCFS::DCFile.new 'nick', '/path/to/nowhere', @client, @download
 
     @client.stub(:timeout_response).and_yield
-    @client.stub(:subscribe) { |blk| @subscribed_block = blk }
-    @client.stub(:unsubscribe)
+    @client.stub_chain('channel.subscribe') { |blk| @subscribed_block = blk }
+    @client.stub_chain('channel.unsubscribed')
     @client.instance_variable_set('@cache_file', '/path/to/nowhere')
     File.stub(:open).with('/path/to/nowhere')
   end

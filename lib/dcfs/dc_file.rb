@@ -115,7 +115,9 @@ module DCFS
     end
 
     def schedule_download size, offset
-      block = lambda { |type, message|
+      @read_count += 1
+
+      sid = @client.channel.subscribe do |type, message|
         if message[:nick] == @nick
           case type
             when :download_progress
@@ -123,14 +125,11 @@ module DCFS
               @cache_file = message[:file]
             when :download_finished, :download_failed, :download_disconnected
               @fargo_downloading = false
-              @client.unsubscribe &block
+              @client.channel.unsubscribe sid
           end
         end
-      }
+      end
 
-      @read_count += 1
-
-      @client.subscribe &block
       @client.download @nick, @download.name, @download.tth,
           size, offset
     end
