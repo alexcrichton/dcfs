@@ -1,8 +1,6 @@
 source :rubygems
 
-gem 'fargo', :path => '../fargo'
-
-gem 'dcfs', :path => '.'
+gemspec
 
 group :development do
   gem 'rake'
