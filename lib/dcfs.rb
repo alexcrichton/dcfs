@@ -1,3 +1,5 @@
+require 'fargo'
+
 begin
   require 'fusefs'
 rescue LoadError

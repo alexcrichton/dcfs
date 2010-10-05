@@ -9,7 +9,7 @@ describe DCFS::DCFile do
 
     @client.stub(:timeout_response).and_yield
     @client.stub_chain('channel.subscribe') { |blk| @subscribed_block = blk }
-    @client.stub_chain('channel.unsubscribed')
+    @client.stub_chain('channel.unsubscribe')
     @client.instance_variable_set('@cache_file', '/path/to/nowhere')
     File.stub(:open).with('/path/to/nowhere')
   end

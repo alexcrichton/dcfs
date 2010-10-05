@@ -16,25 +16,21 @@ module DCFS
     end
 
     def read size, offset
-      p @start, @end
       size = @download.size - offset if size + offset > @download.size
-      p @start, @end
-      p size, offset
-      p @cache_file
 
       if size < @start || @end < size + offset || @cache_file.nil?
         if @downloading
-          puts 'Already downloading, why are you reading again!?'
+          Fargo.logger.debug 'Already downloading, why are you reading again!?'
           raise 'Already downloading, why are you reading again!?'
         elsif @fargo_downloading
-          puts 'Requested a read while fargo was downloading'
+          Fargo.logger.debug 'Requested a read while fargo was downloading'
 
           # We're downloading from fargo, so wait for the downloaded amount to
           # exceed what we're asking for. If more is asked for, we'll do that
           # afterwards
           timeout_download(size, offset)
 
-          puts 'Downloaded enough, now currently recursing'
+          Fargo.logger.debug 'Downloaded enough, now currently recursing'
 
           # A lot of edge cases can happen here, recurse and let this handle it
           # again
@@ -72,14 +68,14 @@ module DCFS
 
       dlend = [dlend, @download.size].min
 
-      puts "Requested #{size} bytes offset by #{offset}"
-      puts "Starting download at #{dlstart}, ending #{dlend}"
-      puts "(#{dlend - dlstart})"
+      Fargo.logger.debug "Requested #{size} bytes offset by #{offset}"
+      Fargo.logger.debug "Starting download at #{dlstart}, ending #{dlend}"
+      Fargo.logger.debug "(#{dlend - dlstart})"
 
       @downloading = true
       @fargo_downloading = true
 
-      puts "Downloading #{@download.inspect}"
+      Fargo.logger.debug "Downloading #{@download.inspect}"
 
       timeout_download(size, offset) do
         schedule_download dlend - dlstart, dlstart
