@@ -19,6 +19,5 @@ Gem::Specification.new do |s|
   s.rdoc_options = ['--charset=UTF-8']
   s.require_path = 'lib'
 
-  s.add_runtime_dependency 'fargo'
   s.add_runtime_dependency 'activesupport', '>= 3.0.0'
 end

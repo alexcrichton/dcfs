@@ -1,6 +1,7 @@
 require 'fargo'
 require 'drb'
 require 'active_support/core_ext/object/try'
+require 'em-http-request'
 
 module DCFS
   class Root
@@ -8,6 +9,16 @@ module DCFS
     def initialize
       @file_lists   = {}
       @opened_files = {}
+      @channel      = EventMachine::Channel.new
+    end
+
+    def spawn_reactor
+      Thread.start { EventMachine.run {
+        host = "ws://#{client.config.websocket_host}" +
+                  ":#{client.config.websocket_port}/"
+        ws = EventMachine::HttpRequest.new(host).get(:timeout => 0)
+        ws.stream { |msg| @channel << Marshal.load(Base64.decode64(msg)) }
+      } }
     end
 
     def contents path
@@ -45,10 +56,7 @@ module DCFS
     end
 
     def client
-      @client ||= begin
-        DRb.start_service
-        DRbObject.new nil, 'druby://localhost:9090'
-      end
+      @client ||= DRbObject.new_with_uri 'druby://localhost:8082'
     end
 
     def raw_open path, mode
@@ -56,8 +64,8 @@ module DCFS
       nick, subpath = split_path path
 
       if mode == 'r'
-        @opened_files[path] = DCFile.new(nick, subpath, client,
-          drilldown(subpath, file_list(nick)))
+        @opened_files[path] = DCFile.new(client,
+          drilldown(subpath, file_list(nick)), @channel)
         true
       else
         false

@@ -1,14 +1,12 @@
 #!/usr/bin/env ruby
 
-require 'rubygems'
-require 'bundler'
-Bundler.setup :default
-
 require 'dcfs'
 
 Thread.abort_on_exception = true
 
 root = DCFS::Root.new
+root.spawn_reactor
+
 FuseFS.set_root root
 FuseFS.mount_under File.expand_path(ARGV.shift)
 FuseFS.run

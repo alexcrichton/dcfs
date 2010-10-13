@@ -1,14 +1,10 @@
 #!/usr/bin/env ruby
 
-require 'rubygems'
-require 'bundler'
-Bundler.setup :default
-
 require 'fargo'
 require 'drb'
 
 client = Fargo::Client.new
 
-DRb.start_service 'druby://localhost:9090', client
+DRb.start_service 'druby://localhost:8082', client
 
 EventMachine.run{ client.connect }

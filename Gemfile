@@ -2,6 +2,8 @@ source :rubygems
 
 gemspec
 
+gem 'fargo', :path => '../fargo'
+
 group :development do
   gem 'rake'
 

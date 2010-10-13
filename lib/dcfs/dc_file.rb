@@ -8,8 +8,8 @@ module DCFS
 
     @@read_lock = Mutex.new
 
-    def initialize nick, path, client, download
-      @nick, @path, @client, @download = nick, path, client, download
+    def initialize client, download, channel
+      @client, @download, @channel = client, download, channel
 
       @start, @end = -1, -1
       @read_count = 0
@@ -101,32 +101,33 @@ module DCFS
       # silly anyway.
       timeout = [size / 500.kilobytes, 10].max
 
-      block = lambda { |type, message|
-        size + offset <= @end || !@fargo_downloading
-      }
-
-      @client.timeout_response(timeout, block) do
-        yield if block_given?
+      current = Thread.current
+      sid = @channel.subscribe do |type, message|
+        current.wakeup if size + offset <= @end || !@fargo_downloading
       end
+
+      yield if block_given?
+      sleep timeout
+      @channel.unsubscribe sid
     end
 
     def schedule_download size, offset
       @read_count += 1
 
-      sid = @client.channel.subscribe do |type, message|
-        if message[:nick] == @nick
+      sid = @channel.subscribe do |type, message|
+        if message[:nick] == @download.nick
           case type
             when :download_progress
               @end = @start + message[:size]
               @cache_file = message[:file]
             when :download_finished, :download_failed, :download_disconnected
               @fargo_downloading = false
-              @client.channel.unsubscribe sid
+              @channel.unsubscribe sid
           end
         end
       end
 
-      @client.download @nick, @download.name, @download.tth,
+      @client.download @download.nick, @download.name, @download.tth,
           size, offset
     end
 
